@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+
+    <title>PageMath</title>
+
+    <style>
+      /* Reset CSS */
+      body,
+      h1,
+      form,
+      label,
+      input,
+      textarea,
+      button {
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Basic styling */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        font-family: 'Itim', cursive;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      input[type="file"],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Hide file preview initially */
+      .hidden {
+        display: none;
+      }
+
+      /* Style image preview */
+      #image-preview {
+        max-width: 100%;
+        height: auto;
+      }
+
+      #delete-button {
+        background: #ffffff;
+        width: 30px;
+        display: flex;
+        justify-content: right;
+      }
+      a{
+        padding-left: 20px;
+      }
+      img{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Thinking</h1>
+      <form action="/insert" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="text-input">Topic:</label>
+          <input type="text" id="text-input" name="title" required />
+        </div>
+        <div class="form-group">
+          <labelfor="file-input">Chosefile (Picture):</label>
+          <input type="file" name="image" id="image" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Explain:</label>
+          <textarea id="description" name="description" rows="4" cols="50"></textarea>
+        </div>
+        <button><a href="./story.ejs">Uplode</a></button><br>
+        <button id="delete-button" onclick="deleteUploadedFile()"><img src="https://cdn1.iconfinder.com/data/icons/jumpicon-basic-ui-glyph-1/32/-_Trash-Can-Delete-Remove--64.png" width="20px"></button>
+      </form>
+    </div>
+
+    <a href="/" class="btn-get-started scrollto" >Homepage</a>
+
+    <script>
+      // document.addEventListener("DOMContentLoaded", function () {
+      //   const fileUploadForm = document.getElementById("file-upload-form");
+      //   const fileInput = document.getElementById("file-input");
+      //   const previewText = document.getElementById("preview-text");
+      //   const previewFilename = document.getElementById("preview-filename");
+      //   const previewDescription = document.getElementById(
+      //     "preview-description"
+      //   );
+      //   const previewFiletype = document.getElementById("preview-filetype");
+      //   const filePreview = document.getElementById("file-preview");
+      //   const imagePreview = document.getElementById("image-preview");
+      //   const previewImage = document.getElementById("preview-image");
+
+      //   fileUploadForm.addEventListener("submit", function (e) {
+      //     e.preventDefault();
+
+      //     const textInputValue = document.getElementById("text-input").value;
+      //     const file = fileInput.files[0];
+      //     const descriptionValue = document.getElementById("description").value;
+
+      //     // Display file details in the preview section
+      //     previewText.textContent = textInputValue;
+      //     previewFilename.textContent = file.name;
+      //     previewDescription.textContent = descriptionValue;
+      //     previewFiletype.textContent = file.type;
+
+      //     // Check if the uploaded file is an image
+      //     if (file.type.startsWith("image/")) {
+      //       previewImage.classList.remove("hidden");
+      //       imagePreview.src = URL.createObjectURL(file);
+      //     } else {
+      //       previewImage.classList.add("hidden");
+      //     }
+
+      //     // Show the file preview section
+      //     filePreview.classList.remove("hidden");
+      //   });
+      // });
+
+      //สร้างฟังก์ชันสำหรับการแก้ไข
+      const editButton = document.getElementById("edit-button");
+      editButton.addEventListener("click", function () {
+        // ซ่อนปุ่มแก้ไข
+        editButton.style.display = "none";
+
+        // แสดงฟอร์มแก้ไข
+        const textInput = document.getElementById("text-input");
+        const descriptionInput = document.getElementById("description");
+        const fileInput = document.getElementById("file-input");
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        textInput.removeAttribute("readonly");
+        descriptionInput.removeAttribute("readonly");
+        fileInput.removeAttribute("disabled");
+        submitButton.textContent = "ยืนยันการแก้ไข";
+      });
+
+      // เพิ่มฟังก์ชันแสดงรายละเอียด
+      function showDetails() {
+        // ซ่อนปุ่มแก้ไข
+        editButton.style.display = "none";
+
+        // แสดงรายละเอียดปัจจุบัน
+        const textInput = document.getElementById("text-input");
+        const descriptionInput = document.getElementById("description");
+        const fileInput = document.getElementById("file-input");
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        textInput.removeAttribute("readonly");
+        descriptionInput.removeAttribute("readonly");
+        fileInput.removeAttribute("disabled");
+        submitButton.textContent = "ยืนยันการแก้ไข";
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileUploadForm = document.getElementById("file-upload-form");
+        const fileInput = document.getElementById("file-input");
+        const previewText = document.getElementById("preview-text");
+        const previewFilename = document.getElementById("preview-filename");
+        const previewDescription = document.getElementById(
+          "preview-description"
+        );
+        const previewFiletype = document.getElementById("preview-filetype");
+        const filePreview = document.getElementById("file-preview");
+        const imagePreview = document.getElementById("image-preview");
+        const previewImage = document.getElementById("preview-image");
+
+        // สร้างออบเจ็กต์ JSON เพื่อเก็บข้อมูล
+        const uploadedData = {
+          text: "",
+          filename: "",
+          description: "",
+          filetype: "",
+          imageUrl: "",
+        };
+
+        fileUploadForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const textInputValue = document.getElementById("text-input").value;
+          const file = fileInput.files[0];
+          const descriptionValue = document.getElementById("description").value;
+
+          // กำหนดข้อมูลในออบเจ็กต์ JSON
+          uploadedData.text = textInputValue;
+          uploadedData.filename = file.name;
+          uploadedData.description = descriptionValue;
+          uploadedData.filetype = file.type;
+
+          // Check if the uploaded file is an image
+          if (file.type.startsWith("image/")) {
+            uploadedData.imageUrl = URL.createObjectURL(file);
+            previewImage.classList.remove("hidden");
+            imagePreview.src = uploadedData.imageUrl;
+          } else {
+            uploadedData.imageUrl = "";
+            previewImage.classList.add("hidden");
+          }
+
+          // แปลงออบเจ็กต์ JSON เป็นสตริง JSON
+          const jsonData = JSON.stringify(uploadedData);
+
+          // แสดงข้อมูล JSON ในคอนโซล
+          console.log(jsonData);
+
+          // Show the file preview section
+          filePreview.classList.remove("hidden");
+        });
+      });
+
+      const express = require("express");
+      const app = express();
+      const fs = require("fs");
+
+      // API endpoint สำหรับลบไฟล์
+      app.delete("/delete-file", (req, res) => {
+        const filePath = "path_to_uploaded_file"; // ระบุพาธไฟล์ที่ต้องการลบ
+
+        // ตรวจสอบว่าไฟล์มีอยู่หรือไม่
+        if (fs.existsSync(filePath)) {
+          // ลบไฟล์
+          fs.unlinkSync(filePath);
+          res.status(200).json({ message: "ไฟล์ถูกลบเรียบร้อยแล้ว" });
+        } else {
+          res.status(404).json({ message: "ไม่พบไฟล์ที่ต้องการลบ" });
+        }
+      });
+
+      // เริ่มต้นเซิร์ฟเวอร์
+      const port = 3000;
+      app.listen(port, () => {
+        console.log(`เซิร์ฟเวอร์ทำงานบนพอร์ต ${port}`);
+      });
+
+      // เพิ่มฟังก์ชันลบไฟล์
+      function deleteUploadedFile() {
+        const textInput = document.getElementById("text-input");
+        const fileInput = document.getElementById("file-input");
+        const descriptionInput = document.getElementById("description");
+        const submitButton = document.querySelector('button[type="submit"]');
+        
+
+        // รีเซ็ตค่าข้อมูล
+        textInput.value = "";
+        fileInput.value = "";
+        descriptionInput.value = "";
+
+        // ซ่อนตัวอย่างภาพ
+        const previewImage = document.getElementById("preview-image");
+        previewImage.classList.add("hidden");
+
+        // แสดงปุ่มแก้ไขและปุ่มอัปโหลด
+        const editButton = document.getElementById("edit-button");
+        editButton.style.display = "block";
+        submitButton.textContent = "อัปโหลด";
+      }
+    </script>
+  </body>
+</html>

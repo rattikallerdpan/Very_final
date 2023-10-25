@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <title>Feed Page</title>
+    <style>
+        body {
+            font-family: 'Itim', cursive;
+        }
+        h1 {
+            text-align: center;
+        }
+        #post {
+            text-align: center;
+            font-size: 18px;
+            background-color: aquamarine;
+            padding-top: 7px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        a{
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Feed Page</h1><br>
+
+    <% postdata.forEach((data, index) => { %>
+        <!-- Display postdata elements here -->
+        <div id="post">
+        <p><%= data.title %></p>
+        <img src="../<%= data.image%>" alt="Photo"> <% console.log(data.image)%>
+        <p><%= data.description %></p><br><hr>
+
+
+    </div> 
+    <% }) %>
+
+    <a href="/" class="btn-get-started scrollto">Homepage</a>
+</body>
+</html>
